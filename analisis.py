@@ -154,26 +154,28 @@ def contar_apoderados(registros):
             
     return total
 
-def analizar_correos_institucionales(dataframe):
-    """
-    Analiza las direcciones de correo electronico para identificar el volumen
-    de cuentas institucionales activas frente a correos externos personales.
-    """
+def agrupar_correos_institucionales(dataframe):
+    # Solución de compatibilidad universal: convierte a DataFrame si viene como lista
     if isinstance(dataframe, list):
         dataframe = pd.DataFrame(dataframe)
-
-    # Contamos de forma directa cuantos correos pertenecen a Valle Grande
-    correos = dataframe.iloc[:, 10].astype(str).str.lower()
-    institucionales = correos.str.contains('@vallegrande.edu.pe').sum()
-    personales = len(correos) - institucionales
-
-    resumen_final = pd.DataFrame({
-        'Tipo_Correo': ['Institucional', 'Personal/Externo'],
-        'Cantidad': [institucionales, personales]
-    })
+        
+    resumen = {}
     
-    print(resumen_final)
-    return resumen_final
+    # Extraemos directamente los valores de la columna de correos (Índice 10)
+    columna_correos = dataframe.iloc[:, 10].dropna()
+    
+    for celda in columna_correos:
+        correo = str(celda).lower().strip()
+        
+        # Filtramos estrictamente por dominio de Valle Grande
+        if "@vallegrande.edu.pe" in correo:
+            if "Institucional" not in resumen:
+                resumen["Institucional"] = 0
+            resumen["Institucional"] += 1
+            
+    # Mostramos el resultado ordenado en consola
+    print(resumen)
+    return resumen
 
 
 # =======================================================
@@ -204,4 +206,4 @@ if __name__ == "__main__":
     print(resultado_apoderados)
 
     print("\n--- ANALISIS DE DOMINIOS DE CORREO ---")
-    analizar_correos_institucionales(df_hoja)
+    agrupar_correos_institucionales(datos_hoja)

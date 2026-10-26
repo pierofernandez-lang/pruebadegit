@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrevista de Apoderados - Valle Grande</title>
     <!-- Cargamos Plotly CDN centralizado -->
-    <script src="https://plotly.com"></script>
+    <script src="https://plot.ly"></script>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -109,12 +109,12 @@
             line-height: 1;
         }
 
-        /* MODIFICADO: MENÚ DE PESTAÑAS EN COLOR AZUL INSTITUCIONAL */
+        /* MENÚ DE PESTAÑAS */
         .contenedor-pestanas {
             display: flex;
             gap: 12px;
             margin-bottom: 30px;
-            background: var(--primary); /* Fondo azul oscuro igual que la cabecera */
+            background: var(--primary);
             padding: 8px;
             border-radius: 14px;
             width: fit-content;
@@ -127,17 +127,15 @@
             padding: 12px 24px;
             font-size: 0.9rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.75); /* Texto blanco semitransparente por defecto */
+            color: rgba(255, 255, 255, 0.75);
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.2s ease;
         }
-        /* MANTIENE EL HOVER AL PASAR EL MOUSE (Fondo azul un poco más claro) */
         .boton-pestana:hover {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.15);
         }
-        /* CUANDO ESTÁ SELECCIONADO: Se mantiene en fondo blanco puro y letras azules */
         .boton-pestana.activa {
             background: #ffffff;
             color: var(--primary);
@@ -160,7 +158,7 @@
         /* REJILLA DE CONTENEDORES PARA GRÁFICOS PLOTLY */
         .grid-graficos {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 25px;
         }
         .contenedor-grafico {
@@ -205,7 +203,7 @@
             <div class="numero">{{ total_apoderados }}</div>
         </div>
         <div class="tarjeta-kpi">
-            <h4>Correos Activos</h4>
+            <h4>Correos Inst.</h4>
             <div class="numero">{{ total_institucionales }}</div>
         </div>
         <div class="tarjeta-kpi">
@@ -228,10 +226,10 @@
     <!-- CONTENIDO - PESTAÑA 1: VISTA GENERAL -->
     <div id="vista-general" class="contenido-pestana activa">
         <div class="grid-graficos">
-            <div class="contenedor-grafico ancho-completo">
+            <div class="contenedor-grafico">
                 {{ grafico1 | safe }}
             </div>
-            <div class="contenedor-grafico ancho-completo">
+            <div class="contenedor-grafico">
                 {{ grafico2 | safe }}
             </div>
         </div>
@@ -251,31 +249,30 @@
 
     <!-- CONTENIDO - PESTAÑA 3: CANALES DE CONTACTO -->
     <div id="vista-contacto" class="contenido-pestana">
-        <div class="contenedor-grafico ancho-completo">
-            {{ grafico7 | safe }}
+        <div class="grid-graficos">
+            <div class="contenedor-grafico ancho-completo">
+                {{ grafico7 | safe }}
+            </div>
         </div>
     </div>
 
-    <!-- SCRIPT INTERACTIVO NATIVO -->
     <script>
         function cambiarPestana(evt, nombrePestana) {
-            var contenidos = document.getElementsByClassName("contenido-pestana");
-            for (var i = 0; i < contenidos.length; i++) {
-                contenidos[i].classList.remove("activa");
+            var i, contenidoPestana, botonesPestana;
+            contenidoPestana = document.getElementsByClassName("contenido-pestana");
+            for (i = 0; i < contenidoPestana.length; i++) {
+                contenidoPestana[i].classList.remove("activa");
             }
-
-            var botones = document.getElementsByClassName("boton-pestana");
-            for (var i = 0; i < botones.length; i++) {
-                botones[i].classList.remove("activa");
+            botonesPestana = document.getElementsByClassName("boton-pestana");
+            for (i = 0; i < botonesPestana.length; i++) {
+                botonesPestana[i].classList.remove("activa");
             }
-
             document.getElementById(nombrePestana).classList.add("activa");
             evt.currentTarget.classList.add("activa");
-
-            // Forzar el redibujado automático para evitar fallas visuales de Plotly
+            
+            // Forzar a Plotly a redibujar los gráficos que estaban ocultos en las pestañas
             window.dispatchEvent(new Event('resize'));
         }
     </script>
-
 </body>
 </html>

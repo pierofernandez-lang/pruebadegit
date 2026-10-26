@@ -9,7 +9,7 @@ from analisis import (
     agrupar_por_tipo,
     contar_apoderados,
     contar_estudiantes,
-    analizar_correos_institucionales
+    agrupar_correos_institucionales
 )
 
 from graficos import (
@@ -45,8 +45,8 @@ def dashboard():
     resumen_tipo = agrupar_por_tipo(datos)
     total_por_tipo = sum(resumen_tipo.values()) if isinstance(resumen_tipo, dict) else 0
 
-    correos_df = analizar_correos_institucionales(datos)
-    total_institucionales = sum(correos_df['Cantidad'].values) if isinstance(correos_df, pd.DataFrame) else 0
+    correos_dicc = agrupar_correos_institucionales(datos)
+    total_institucionales = correos_dicc.get('Institucional', 0)
 
     # Renderizado HTML de Gráficos de Plotly
     grafico1 = grafico_barras(datos).to_html(full_html=False, include_plotlyjs='cdn')

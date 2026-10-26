@@ -8,7 +8,7 @@ from analisis import (
     agrupar_por_tipo,
     contar_estudiantes,
     contar_apoderados,
-    analizar_correos_institucionales
+    agrupar_correos_institucionales
 )
 
 from conexion_sheets import obtener_datos
@@ -98,10 +98,13 @@ def grafico_total_apoderados(datos):
     return fig
 
 def grafico_correos(datos):
-    resumen_df = analizar_correos_institucionales(datos)
+    # Convertimos los datos a DataFrame para mantener la compatibilidad con el índice 10
+    df_datos = pd.DataFrame(datos)
+    resumen_dicc = agrupar_correos_institucionales(df_datos)
     
-    etiquetas = resumen_df['Tipo_Correo'].tolist()
-    valores = resumen_df['Cantidad'].tolist()
+    # Extraemos las claves y valores correctamente desde el diccionario
+    etiquetas = list(resumen_dicc.keys())
+    valores = list(resumen_dicc.values())
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
@@ -113,7 +116,7 @@ def grafico_correos(datos):
     ))
     
     fig.update_layout(
-        title="7. Distribución de Correos Institucionales vs Personales", 
+        title="7. Volumen de Cuentas Institucionales Activas", 
         template="plotly_white", 
         height=400
     )
