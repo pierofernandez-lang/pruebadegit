@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista de Apoderados - Valle Grande</title>
+    <!-- Cargamos Plotly CDN centralizado -->
+    <script src="https://plotly.com"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --bg-start: #f0f4f8;
+            --bg-end: #dbeafe;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border-color: rgba(226, 232, 240, 0.8);
+            --shadow-soft: 0 10px 25px -5px rgba(30, 41, 59, 0.05), 0 8px 16px -6px rgba(30, 41, 59, 0.03);
+            --shadow-intensified: 0 20px 30px -5px rgba(30, 41, 59, 0.12), 0 10px 15px -5px rgba(30, 41, 59, 0.06);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--bg-start) 0%, #e0e7ff 50%, var(--bg-end) 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* DISEÑO DE LA CABECERA OPTIMIZADO */
+        .header-dashboard {
+            margin-bottom: 35px;
+            background: var(--primary);
+            padding: 15px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            border-left: 6px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* CONTENEDOR TRANSMISIBLE DE LOGOTIPO */
+        .contenedor-logo {
+            width: 320px; 
+            height: 70px;
+            display: flex;
+            align-items: center;
+        }
+        .header-dashboard img {
+            height: 70px;
+            width: 100%;
+            object-fit: contain;
+            object-position: left center;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header-dashboard h2 {
+            color: #ffffff; 
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            border-left: 2px solid rgba(255, 255, 255, 0.3);
+            padding-left: 20px;
+        }
+
+        /* REJILLA DE TARJETAS INDICADORAS KPI */
+        .grid-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+        .tarjeta-kpi {
+            background: var(--card-bg);
+            padding: 24px 15px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            border-top: 4px solid var(--secondary);
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tarjeta-kpi:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-intensified);
+            border-top-color: var(--primary);
+        }
+        .tarjeta-kpi:nth-child(4) { border-top-color: #8b5cf6; } 
+        .tarjeta-kpi:nth-child(4):hover { border-top-color: #6d28d9; }
+        .tarjeta-kpi:nth-child(5) { border-top-color: #ef4444; } 
+        .tarjeta-kpi:nth-child(5):hover { border-top-color: #b91c1c; }
+        .tarjeta-kpi:nth-child(6) { border-top-color: #10b981; }
+        .tarjeta-kpi:nth-child(6):hover { border-top-color: #047857; }
+        
+        .tarjeta-kpi h4 {
+            margin: 0 0 10px 0;
+            color: #64748b;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+        .tarjeta-kpi .numero {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1;
+        }
+
+        /* MODIFICADO: MENÚ DE PESTAÑAS EN COLOR AZUL INSTITUCIONAL */
+        .contenedor-pestanas {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: var(--primary); /* Fondo azul oscuro igual que la cabecera */
+            padding: 8px;
+            border-radius: 14px;
+            width: fit-content;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .boton-pestana {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75); /* Texto blanco semitransparente por defecto */
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        /* MANTIENE EL HOVER AL PASAR EL MOUSE (Fondo azul un poco más claro) */
+        .boton-pestana:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        /* CUANDO ESTÁ SELECCIONADO: Se mantiene en fondo blanco puro y letras azules */
+        .boton-pestana.activa {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* CONTENIDO DE LAS PESTAÑAS Y ANIMACIONES */
+        .contenido-pestana {
+            display: none;
+        }
+        .contenido-pestana.activa {
+            display: block;
+            animation: cubicTransition 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes cubicTransition {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* REJILLA DE CONTENEDORES PARA GRÁFICOS PLOTLY */
+        .grid-graficos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+            gap: 25px;
+        }
+        .contenedor-grafico {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        .contenedor-grafico:hover {
+            box-shadow: var(--shadow-intensified);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+        .ancho-completo {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-dashboard">
+        <div class="contenedor-logo">
+            <img src="/static/image_KcMZPF.png" alt="Logo Valle Grande">
+        </div>
+        <h2>📋 ENTREVISTA DE APODERADOS</h2>
+    </div>
+
+    <!-- 1. BLOQUE DE MÉTRICAS RÁPIDAS (KPI) -->
+    <div class="grid-kpis">
+        <div class="tarjeta-kpi">
+            <h4>Total Registros</h4>
+            <div class="numero">{{ total_registros }}</div>
+        </div>
+        <div class="tarjeta-kpi">
+            <h4>Total Estudiantes</h4>
+            <div class="numero">{{ total_estudiantes }}</div>
+        </div>
+        <div class="tarjeta-kpi">
+            <h4>Total Apoderados</h4>
+            <div class="numero">{{ total_apoderados }}</div>
+        </div>
+        <div class="tarjeta-kpi">
+            <h4>Correos Activos</h4>
+            <div class="numero">{{ total_institucionales }}</div>
+        </div>
+        <div class="tarjeta-kpi">
+            <h4>Casos Críticos</h4>
+            <div class="numero">{{ comentarios_criticos }}</div>
+        </div>
+        <div class="tarjeta-kpi">
+            <h4>Alertas Tipo</h4>
+            <div class="numero">{{ total_por_tipo }}</div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INTERACTIVA POR PESTAÑAS -->
+    <div class="contenedor-pestanas">
+        <button class="boton-pestana activa" onclick="cambiarPestana(event, 'vista-general')">📊 Vista General</button>
+        <button class="boton-pestana" onclick="cambiarPestana(event, 'vista-alertas')">⚠️ Alertas y Convivencia</button>
+        <button class="boton-pestana" onclick="cambiarPestana(event, 'vista-contacto')">📧 Canales de Contacto</button>
+    </div>
+
+    <!-- CONTENIDO - PESTAÑA 1: VISTA GENERAL -->
+    <div id="vista-general" class="contenido-pestana activa">
+        <div class="grid-graficos">
+            <div class="contenedor-grafico ancho-completo">
+                {{ grafico1 | safe }}
+            </div>
+            <div class="contenedor-grafico ancho-completo">
+                {{ grafico2 | safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO - PESTAÑA 2: ALERTAS Y CONVIVENCIA -->
+    <div id="vista-alertas" class="contenido-pestana">
+        <div class="grid-graficos">
+            <div class="contenedor-grafico">
+                {{ grafico3 | safe }}
+            </div>
+            <div class="contenedor-grafico">
+                {{ grafico4 | safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO - PESTAÑA 3: CANALES DE CONTACTO -->
+    <div id="vista-contacto" class="contenido-pestana">
+        <div class="contenedor-grafico ancho-completo">
+            {{ grafico7 | safe }}
+        </div>
+    </div>
+
+    <!-- SCRIPT INTERACTIVO NATIVO -->
+    <script>
+        function cambiarPestana(evt, nombrePestana) {
+            var contenidos = document.getElementsByClassName("contenido-pestana");
+            for (var i = 0; i < contenidos.length; i++) {
+                contenidos[i].classList.remove("activa");
+            }
+
+            var botones = document.getElementsByClassName("boton-pestana");
+            for (var i = 0; i < botones.length; i++) {
+                botones[i].classList.remove("activa");
+            }
+
+            document.getElementById(nombrePestana).classList.add("activa");
+            evt.currentTarget.classList.add("activa");
+
+            // Forzar el redibujado automático para evitar fallas visuales de Plotly
+            window.dispatchEvent(new Event('resize'));
+        }
+    </script>
+
+</body>
+</html>
