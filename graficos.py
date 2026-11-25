@@ -121,3 +121,15 @@ def grafico_correos(datos):
         height=400
     )
     return fig
+if __name__ == "__main__":
+    # 1. Obtener los datos desde Google Sheets
+    datos = obtener_datos()
+
+    # 2. Llamar a las funciones y mostrar cada gráfico
+    grafico_barras(datos).show()
+    grafico_dona(datos).show()
+    grafico_comentarios(datos).show()
+    grafico_categorias(datos).show()
+    grafico_total_estudiantes(datos).show()
+    grafico_total_apoderados(datos).show()
+    grafico_correos(datos).show()
